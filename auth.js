@@ -52,16 +52,16 @@ function authoriseUser(req, res) {
         }
         let user = await User.findOne({id : body.id})
         if (user) {
-          // res.json(user)
           console.log('User already exists')
-          // return;
+          res.send({
+            'message' : 'User already exists'
+          })
+          return;
         }
         
-        user = createUser(body.id, {
+        user = await createUser(access_token, {
           'id' : body.id,
           'name' : body.display_name,
-          'playlistIds' : [],
-          'songIds' : [],
           // TODO: implement this
           'accessToken' : access_token,
           'refreshToken' : refresh_token

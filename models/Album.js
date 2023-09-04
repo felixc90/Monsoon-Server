@@ -3,11 +3,10 @@ const mongoose = require('mongoose')
 var schema = mongoose.Schema({
   'id' : String,
   'artistIds' : [String],
-  'albumId' : String,
-  'duration' : Number,
+  'image' : String,
   'name' : String,
-  'popularity' : Number,
+  'releaseDate' : String
 })
 
 
-module.exports = mongoose.model("Song", schema)
+module.exports = mongoose.model("Album", schema)
