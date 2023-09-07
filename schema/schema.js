@@ -36,10 +36,7 @@ const PlaylistType = new GraphQLObjectType({
     songs: {
       type: new GraphQLList(TaggedSongType),
       resolve(parent, args) {
-        const promises = parent.taggedSongIds.map(songId => {
-          return TaggedSong.findOne({ id: songId})
-        })
-        return Promise.all(promises)
+        return TaggedSong.find({ id: { $in: parent.taggedSongIds } })
       }
     }
   })
