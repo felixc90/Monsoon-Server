@@ -4,7 +4,7 @@ var schema = mongoose.Schema({
   'id' : String,
   'name' : String,
   'playlistIds' : [String],
-  'songIds' : [String],
+  'taggedSongIds' : [String],
   'refreshToken' : String,
   'accessToken' : String
 })

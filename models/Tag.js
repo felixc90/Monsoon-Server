@@ -1,9 +1,7 @@
 const mongoose = require('mongoose')
 
 var schema = mongoose.Schema({
-  'id' : String,
-  'userId': String,
-  'songIds' : [String],
+  'name' : String,
   'isCategory' : Boolean,
   'categories': [String]
 })

@@ -4,6 +4,7 @@ const Playlist = require('./models/Playlist');
 const Artist = require('./models/Artist');
 const Album = require('./models/Album');
 const Song = require('./models/Song');
+const TaggedSong = require('./models/TaggedSong');
 const { get, put, post, del } = require('./helpers');
 
 async function createUser(accessToken, userData) {
@@ -15,14 +16,20 @@ async function createUser(accessToken, userData) {
       get(url, undefined, accessToken)
       .then(res => createPlaylist(res))
     )
-    // break
+    break;
   }
 
-  const playlistIds = await Promise.all(playlistPromises)
+  const playlists = await Promise.all(playlistPromises)
+  const taggedSongIds = []
+  for (playlist of playlists) {
+    taggedSongIds.push(...playlist.taggedSongIds)
+  }
+
   userData = {
     ...userData,
-    'playlistIds' : playlistIds,
-    'songIds' : [],
+    'playlistIds' : playlists.map(playlist => playlist.id),
+    'taggedSongIds' : taggedSongIds,
+    'tagIds' : []
   }
   user = new User(userData)
   await user.save()
@@ -31,44 +38,54 @@ async function createUser(accessToken, userData) {
 }
 
 async function createPlaylist(playlistObject) {
-  count = 0
   songPromises = []
   for (item of playlistObject.tracks.items) {
-    if (count == 1) {
-      break;
-    }
-    songPromises.push(createSong(item.track))
-    // count += 1
+    songPromises.push(createTaggedSong(item.track, playlistObject.owner.id))
   }
+
+
   const songIds = await Promise.all(songPromises)
   const playlist = new Playlist({
     'name' : playlistObject.name,
     'id' : playlistObject.id,
     'image' : playlistObject.images[0].url,
     'userId': playlistObject.owner.id,
-    'songIds' : songIds
+    'taggedSongIds' : songIds
   })
   await playlist.save()
-  return playlist.id
+  return playlist
 }
 
-async function createSong(songObject) {
-  if (await Song.findOne({id: songObject.id})) {
-    return songObject.id
+async function createTaggedSong(songObject, userId) {
+  const song = await Song.findOne({id: songObject.id})
+
+  if (!song) {
+    const artistIds = await Promise.all(songObject.artists.map(artist => createArtist(artist)))
+  
+    const song = new Song({
+      'id' : songObject.id,
+      'artistIds' : artistIds,
+      'albumId' : await createAlbum(songObject.album),
+      'duration' : songObject.duration_ms,
+      'name' : songObject.name,
+      'popularity' : songObject.popularity,
+    })
+
+    await song.save();
   }
 
-  const artistIds = await Promise.all(songObject.artists.map(artist => createArtist(artist)))
+  const taggedSongId = userId + songObject.id
 
-  const song = new Song({
-    'id' : songObject.id,
-    'artistIds' : artistIds,
-    'albumId' : await createAlbum(songObject.album),
-    'duration' : songObject.duration_ms,
-    'name' : songObject.name,
-    'popularity' : songObject.popularity,
+  const taggedSong = new TaggedSong({
+    'id' : taggedSongId,
+    'userId' : userId,
+    'tags': [],
+    'songId': songObject.id
   })
-  await song.save()
-  return songObject.id
+
+  
+  await taggedSong.save();
+  return taggedSongId;
 }
 
 async function createArtist(artistObject) {

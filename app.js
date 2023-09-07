@@ -1,21 +1,28 @@
 const express = require('express');
+const { graphqlHTTP } = require('express-graphql');
+const schema = require('./schema/schema');
+const mongoose = require('mongoose');
+const dotenv = require('dotenv');
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 const cors = require('cors');
 const querystring = require('querystring');
 const cookieParser = require('cookie-parser');
-const mongoose = require('mongoose');
-const dotenv = require('dotenv');
-const { authoriseUser } = require('./auth');
+const { authoriseUser } = require('./auth')
 
 dotenv.config()
 
+const app = express();
 
+app.use('/graphql', graphqlHTTP({
+  schema,
+  graphiql: true
+}));
 
-/**
- * Generates a random string containing numbers and letters
- * @param  {number} length The length of the string
- * @return {string} The generated string
- */
+// /**
+//  * Generates a random string containing numbers and letters
+//  * @param  {number} length The length of the string
+//  * @return {string} The generated string
+//  */
 const generateRandomString = function(length) {
   let text = '';
   const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -26,16 +33,9 @@ const generateRandomString = function(length) {
   return text;
 };
 
-
-const app = express();
-
-app.use(express.static(__dirname + '/public'))
-   .use(cors())
-   .use(cookieParser());
-
-
-
 const state = generateRandomString(16);
+
+
 
 // your application requests authorization
 const scope = 'user-read-private user-read-email';
@@ -49,6 +49,9 @@ console.log('https://accounts.spotify.com/authorize?' +
   }));
 
 app.get('/auth', authoriseUser)
+
+
+
 
 mongoose.connect(process.env.MONGODB_CONNECT)
 mongoose.connection.once('open', () => {

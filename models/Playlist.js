@@ -5,7 +5,7 @@ var schema = mongoose.Schema({
   'id' : String,
   'userId': String,
   'image' : String,
-  'songIds' : [String]
+  'taggedSongIds' : [String]
 })
 
 
