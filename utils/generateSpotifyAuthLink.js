@@ -23,7 +23,7 @@ const state = generateRandomString(16);
 // your application requests authorization
 const scope = 'user-read-private user-read-email';
 
-export const generateSpotifyOAuthLink = () => {
+export const generateSpotifyAuthLink = () => {
   const scope = 'user-read-private user-read-email';
   const url = 'https://accounts.spotify.com/authorize?' +
     querystring.stringify({

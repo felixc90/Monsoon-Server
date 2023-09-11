@@ -1,7 +1,12 @@
-import { generateSpotifyOAuthLink } from './utils/generateSpotifyOAuthLink.js'
+import { generateSpotifyAuthLink } from './utils/generateSpotifyAuthLink.js'
 
 export const resolvers = {
   Query: {
-      getSpotifyOAuthLink: () => generateSpotifyOAuthLink(),
+    spotifyAuthLink: () => generateSpotifyAuthLink(),
   },
+  Mutation: {
+    login: async (_, { code }, { dataSources }) => {
+      return 'THIS WORKS ' + code;
+    },
+  }
 };
