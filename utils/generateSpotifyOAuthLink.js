@@ -1,4 +1,7 @@
 import querystring from 'querystring';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 // /**
 //  * Generates a random string containing numbers and letters
