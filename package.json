@@ -20,6 +20,7 @@
   "homepage": "https://github.com/felixc90/Monsoon-Server#readme",
   "type": "module",
   "dependencies": {
+    "@apollo/datasource-rest": "^6.1.0",
     "@apollo/server": "^4.9.3",
     "dotenv": "^16.3.1",
     "graphql": "^16.8.0",
