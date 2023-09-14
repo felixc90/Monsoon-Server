@@ -110,11 +110,11 @@ class SpotifyAPI extends RESTDataSource {
 
   albumReducer(album) {
     return {
-      artists: album.artists.map(artist => this.artistReducer(artist)),
-      id: album.id,
-      images: album.images,
-      name: album.name,
-      releaseDate: album.releaseDate
+      'artists': album.artists.map(artist => this.artistReducer(artist)),
+      'id': album.id,
+      'images': album.images,
+      'name': album.name,
+      'releaseDate': album.releaseDate
     };
   }
 
