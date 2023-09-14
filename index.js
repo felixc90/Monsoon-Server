@@ -1,9 +1,16 @@
 import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
-
 import { typeDefs } from './schema.js';
 import { resolvers } from './resolvers.js';
+import { mongoose } from 'mongoose';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+
 import SpotifyAPI from './dataSources/SpotifyAPI.js'
+import MongoDBDataSource from './dataSources/MongoDBDataSource.js'
+
 
 // The ApolloServer constructor requires two parameters: your schema
 // definition and your set of resolvers.
@@ -13,6 +20,13 @@ const server = new ApolloServer({
   
   introspection: true
 });
+
+
+mongoose.connect(process.env.MONGODB_URI)
+mongoose.connection.once('open', () => {
+  console.log('Connected to database');
+})
+
 
 // Passing an ApolloServer instance to the `startStandaloneServer` function:
 //  1. creates an Express app
@@ -26,8 +40,8 @@ const { url } = await startStandaloneServer(server, {
       // We create new instances of our data sources with each request,
       // passing in our server's cache.
       dataSources: {
-        spotifyAPI: new SpotifyAPI()
-        // userAPI: new MongoDBDataSource({ store }),
+        spotifyAPI: new SpotifyAPI(),
+        mongodb: new MongoDBDataSource(),
       },
     };
   },
